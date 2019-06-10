@@ -1,0 +1,40 @@
+package Dryrun;
+
+import java.io.BufferedInputStream;
+import java.io.InputStream;
+import java.net.URL;
+
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
+
+public class ReadPDFUdemy {
+	static URL TestURL;
+	static InputStream is;
+	static PDDocument document = null;
+	static String PDFContent=null;
+	
+	
+	public static void main(String[] args) throws Exception {
+		String x= ReadPDF1();
+		System.out.println(x);
+
+	}
+	
+	public static String ReadPDF1() {
+		try {
+		TestURL = new URL("file:/C:/Users/A348404/Downloads/TestPDF.pdf");
+		is=TestURL.openStream();
+		BufferedInputStream fileparse = new BufferedInputStream(is);
+		
+		document=PDDocument.load(fileparse);
+		PDFContent = new PDFTextStripper().getText(document);
+		}
+		catch(Exception e)
+		{
+			
+		}
+	return PDFContent;
+		}
+
+}
+
