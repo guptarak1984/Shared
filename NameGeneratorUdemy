@@ -1,0 +1,99 @@
+package Cert;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+public class GermanNameForUdemy {
+	public static XSSFWorkbook wb;
+	public static XSSFSheet sheet1;
+	public static File file;
+	public static WebDriver driver;
+	public static GermanNameForUdemy RE;
+	public static String[] arrSplit;
+	public static String[] arrSplit1;
+	public static String[] arrSplit2;
+
+	public static void main(String[] args) throws IOException {
+		
+		System.setProperty("webdriver.chrome.driver", "C:\\Users\\rakgu\\Downloads\\Compressed\\chromedriver_win32\\chromedriver.exe");
+		driver = new ChromeDriver();
+		driver.manage().window().maximize();
+		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+		driver.get("https://www.fakenamegenerator.com/gen-random-gr-gr.php");
+		File file =  new File("C:\\Users\\rakgu\\Documents\\GermanNames.xlsx");
+		FileInputStream  fis = new FileInputStream(file);
+		wb = new XSSFWorkbook(fis);
+		sheet1=wb.getSheetAt(0);
+		
+		for(int j=0;j<1000;j++) {
+			sheet1.createRow(j);
+		}
+		
+		try
+		{
+		for(int i=0;i<1000;i++) {
+			
+			driver.findElement(By.cssSelector("#genbtn")).click();
+			try {
+				Thread.sleep(3000);
+			} catch (InterruptedException e) {
+			
+				e.printStackTrace();
+			}
+			String strMain = driver.findElement(By.xpath("//div[@class='address']/h3")).getText().trim();
+			arrSplit = strMain.split(" ");
+		    
+		    
+		    String strMainEmail = driver.findElement(By.xpath("//dt[contains(text(),'Email Address')]//parent::dl/dd")).getText();
+		    strMainEmail=strMainEmail.replace("This is a real email address. Click here to activate it!", "");
+		    arrSplit1=strMainEmail.split("\\@");
+		    Random rand = new Random();
+		    int EmailLength=  rand.nextInt((16 - 8) + 1) + 8;
+		    int PwdLength=  rand.nextInt((11 - 8) + 1) + 8;
+		    
+		   String EmailPart1= randomAlphaNumeric(EmailLength);
+		    String Email=EmailPart1.toLowerCase()+"@"+arrSplit1[1];
+		   String Pwd = randomAlphaNumeric(PwdLength);
+		   
+		    sheet1.getRow(i).createCell(0).setCellValue(strMain);
+		    sheet1.getRow(i).createCell(1).setCellValue(arrSplit[0].trim());
+			sheet1.getRow(i).createCell(2).setCellValue(arrSplit[1].trim());
+			sheet1.getRow(i).createCell(3).setCellValue(strMainEmail.trim());
+			sheet1.getRow(i).createCell(4).setCellValue(Email.trim());
+			sheet1.getRow(i).createCell(5).setCellValue(Pwd);
+			
+		}
+		}
+		catch (Exception e)
+		
+		{
+		}
+		
+		finally
+		{
+			FileOutputStream fout=new FileOutputStream(file);
+			wb.write(fout);
+			wb.close();
+		}
+	}
+	
+	private static final String ALPHA_NUMERIC_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz";
+	public static String randomAlphaNumeric(int count) {
+	StringBuilder builder = new StringBuilder();
+	while (count-- != 0) {
+	int character = (int)(Math.random()*ALPHA_NUMERIC_STRING.length());
+	builder.append(ALPHA_NUMERIC_STRING.charAt(character));
+	}
+	return builder.toString();
+	}
+}
